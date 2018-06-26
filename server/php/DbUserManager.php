@@ -15,8 +15,8 @@ class DbUserManager{
   }
 
   public function createUser($username,$email,$password){
-    if(!isUsernameExisted($username)){
-      if (!isEmailExisted($email)) {
+    if(!$this->isUsernameExisted($username)){
+      if (!$this->isEmailExisted($email)) {
         $hashed_password=password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->con->prepare("INSERT INTO users (username, email, password) VALUES (?,?,?)");
         $stmt->bind_param("sss", $username,$email,$hashed_password);
@@ -37,8 +37,18 @@ class DbUserManager{
     // code...
   }
 
-  public function getUser(){
-    // code...
+  public function getUser($email,$password){
+    $stmt = $this->con->prepare("SELECT * FROM users WHERE email LIKE ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    $user=$stmt->get_result()->fetch_assoc();
+
+    if(password_verify($password,$user['password']))
+      return $user;
+    else
+      return array('error' => true, 'message' => "Zlé heslo!" );
+
   }
   public function updateUser(){
     // code...
@@ -50,11 +60,7 @@ class DbUserManager{
     $stmt->execute();
     $stmt->store_result();
 
-    if($stmt->num_rows>0)
-      return true;
-    else
-      return false;
-
+    return  $stmt->num_rows>0 ? true : false;
   }
 
   private function isUsernameExisted($username){
@@ -63,10 +69,7 @@ class DbUserManager{
     $stmt->execute();
     $stmt->store_result();
 
-    if($stmt->num_rows>0)
-      return true;
-    else
-      return false;
+    return  $stmt->num_rows>0 ? true : false;
   }
 
 }

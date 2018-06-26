@@ -21,12 +21,10 @@ class DbCastleManager{
 
     while($stmt->fetch()){
       $castle  = array();
-      $castle['id'] = $id;
-      $castle['name'] = $name;
-      $castle['lon'] = $lon;
-      $castle['lat'] = $lat;
-
-      array_push($castles, $castle);
+      array_push($castles, array('id' => $id,
+                                 'name' => $name,
+                                 'lon' => $lon,
+                                 'lat' => $lat));
     }
      return $castles;
  }
@@ -55,17 +53,15 @@ class DbCastleManager{
 
     while($stmt->fetch()){
       $castle  = array();
-      $castle['id'] = $id;
-      $castle['name'] = $name;
-      $castle['lon'] = $lon;
-      $castle['lat'] = $lat;
 
       //výpočet vzdialenosti
-
       $distance = sqrt((($lat-$user_lat)**2)+(($lon-$user_lon)**2));
-      $castle['distance']=$distance;
 
-      array_push($castles, $castle);
+      array_push($castles, array('id' => $id,
+                                 'name' => $name,
+                                 'lon' => $lon,
+                                 'lat' => $lat,
+                                 'distance' => $distance));
     }
      return $castles;
   }
